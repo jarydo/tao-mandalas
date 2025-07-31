@@ -14,10 +14,18 @@ let videoScale = 1;
 let videoOffsetX = 0;
 let videoOffsetY = 0;
 
+let handStates = [];
+
 function preload() {
   handPose = ml5.handPose();
   innerCircle = loadImage(baseUrl + "/inner_circle.png");
   outerCircle = loadImage(baseUrl + "/outer_circle.png");
+
+  soundFormats("mp3");
+  shieldOpen = loadSound(baseUrl + "/shield_open.mp3");
+  shieldOpen.rate(1.2);
+  shieldClose = loadSound(baseUrl + "/shield_close.mp3");
+  shieldClose.rate(1.2);
 }
 
 function setup() {
@@ -77,11 +85,17 @@ function draw() {
 
 function gotHands(results) {
   hands = results;
+
+  while (handStates.length < hands.length) {
+    handStates.push({ isOpen: false, wasOpen: false });
+  }
+  handStates = handStates.slice(0, hands.length);
 }
 
 function drawMagicEffects() {
   for (let i = 0; i < hands.length; i++) {
     let hand = hands[i];
+    let handState = handStates[i];
 
     let wrist = hand.wrist;
     let middleTip = hand.middle_finger_tip;
@@ -97,7 +111,21 @@ function drawMagicEffects() {
     // Scale threshold based on video scaling factor
     let threshold = 100 * (videoScale / 2); // Adjust threshold based on video scale
 
-    if (openness > threshold) {
+    // Update hand state
+    handState.wasOpen = handState.isOpen;
+    handState.isOpen = openness > threshold;
+
+    // Handle state changes
+    if (handState.isOpen && !handState.wasOpen) {
+      // Hand just opened
+      shieldOpen.play();
+    } else if (!handState.isOpen && handState.wasOpen) {
+      // Hand just closed
+      shieldClose.play();
+    }
+
+    // Draw effects for open hands
+    if (handState.isOpen) {
       glowIntensity = lerp(glowIntensity, 1.0, 0.1);
       drawShields(width - screenX, screenY, openness * videoScale * 0.8);
     }

@@ -1,3 +1,5 @@
+const baseUrl = document.currentScript.getAttribute("data-base-url") || "";
+
 let handPose;
 let video;
 let hands = [];
@@ -14,8 +16,8 @@ let videoOffsetY = 0;
 
 function preload() {
   handPose = ml5.handPose();
-  innerCircle = loadImage("/inner_circle.png");
-  outerCircle = loadImage("/outer_circle.png");
+  innerCircle = loadImage(baseUrl + "/inner_circle.png");
+  outerCircle = loadImage(baseUrl + "/outer_circle.png");
 }
 
 function setup() {

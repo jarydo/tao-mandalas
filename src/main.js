@@ -14,8 +14,8 @@ let videoOffsetY = 0;
 
 function preload() {
   handPose = ml5.handPose();
-  innerCircle = loadImage("/inner_circle.png");
-  outerCircle = loadImage("/outer_circle.png");
+  innerCircle = loadImage("/public/inner_circle.png");
+  outerCircle = loadImage("/public/outer_circle.png");
 }
 
 function setup() {

@@ -1,4 +1,4 @@
-const baseUrl = document.currentScript.getAttribute("data-base-url") || "";
+baseUrl = document.currentScript.getAttribute("data-base-url") || "";
 
 let handPose;
 let video;

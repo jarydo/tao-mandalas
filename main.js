@@ -100,16 +100,22 @@ function drawMagicEffects() {
     let wrist = hand.wrist;
     let middleTip = hand.middle_finger_tip;
     let middleMcp = hand.middle_finger_mcp;
+    let thumbCmc = hand.thumb_cmc;
+    let pinkyMcp = hand.pinky_finger_mcp;
+
+    console.log(hand);
 
     // Convert hand coordinates to screen coordinates
     let screenX = middleMcp.x * videoScale + videoOffsetX;
     let screenY = middleMcp.y * videoScale + videoOffsetY;
 
-    // Calculate if hand is open using original video coordinates
-    let openness = dist(wrist.x, wrist.y, middleTip.x, middleTip.y);
+    // Calculate if hand is open using ratio-based approach
+    let palmWidth = dist(thumbCmc.x, thumbCmc.y, pinkyMcp.x, pinkyMcp.y);
+    let fingerSpread = dist(wrist.x, wrist.y, middleTip.x, middleTip.y);
+    let openness = fingerSpread / palmWidth;
 
-    // Scale threshold based on video scaling factor
-    let threshold = 100 * (videoScale / 2); // Adjust threshold based on video scale
+    // Use ratio threshold (independent of distance/scale)
+    let threshold = 1.5; // Adjust this ratio as needed
 
     // Update hand state
     handState.wasOpen = handState.isOpen;
@@ -127,7 +133,11 @@ function drawMagicEffects() {
     // Draw effects for open hands
     if (handState.isOpen) {
       glowIntensity = lerp(glowIntensity, 1.0, 0.1);
-      drawShields(width - screenX, screenY, openness * videoScale * 0.8);
+      drawShields(
+        width - screenX,
+        screenY,
+        openness * palmWidth * videoScale * 0.8
+      );
     }
   }
 }
